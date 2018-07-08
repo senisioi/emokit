@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-from emokit.emotiv import EmotivPacket
-from emokit.sensors import sensor_bits
+from emokit.emotiv import Emotiv
+from emokit.sensors import sensors_16_bits
 
 
 def get_test_data():
@@ -36,15 +36,15 @@ def get_test_data():
 
 def test_init():
     data = get_test_data()
-    packet = EmotivPacket(data)
-    for sensor in sensor_bits.keys():
+    packet = Emotiv(data)
+    for sensor in sensors_16_bits.keys():
         assert sensor in packet.sensors.keys()
 
 
 def test_repr():
     data = get_test_data()
-    packet = EmotivPacket(data)
+    packet = Emotiv(data)
 
     # tests #214
-    assert packet.battery == None
-    print(packet)
+    assert packet.battery == 0
+    

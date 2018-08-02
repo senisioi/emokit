@@ -55,21 +55,26 @@ def main():
     height = screen.height
 
     cursor_x, cursor_y = width // 2, height // 2
-    while True:
-        updated = False
-        packet = headset.dequeue()
-        if abs(packet.sensors['X']['value']) > 1:
-            cursor_x -= packet.sensors['X']['value']
-            updated = True
-        if abs(packet.sensors['Y']['value']) > 1:
-            cursor_y += packet.sensors['Y']['value']
-            updated = True
-        cursor_x = max(0, min(cursor_x, width))
-        cursor_y = max(0, min(cursor_y, height))
-        if updated:
-            screen.move_mouse(cursor_x, cursor_y)
-        time.sleep(0.001)
+    with Emotiv(display_output=True, verbose=False) as headset:
+        while headset.running:
+            updated = False
+            try:
+                packet = headset.dequeue()
+                if packet is None:
+                    continue
+                if abs(packet.sensors['X']['value']) > 1:
+                    cursor_x -= packet.sensors['X']['value']
+                    updated = True
+                if abs(packet.sensors['Y']['value']) > 1:
+                    cursor_y += packet.sensors['Y']['value']
+                    updated = True
+                cursor_x = max(0, min(cursor_x, width))
+                cursor_y = max(0, min(cursor_y, height))
+                if updated:
+                    screen.move_mouse(cursor_x, cursor_y)
+                time.sleep(0.001)
+            except:
+                pass
 
 if __name__ == "__main__":
-    with Emotiv() as headset:
-        main()
+    main()

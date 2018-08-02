@@ -74,15 +74,16 @@ def get_level(data, bits, verbose=False):
     return level * 0.5151515151
 
 
-def get_gyro(data, bits, verbose=False):
+def get_gyro_emotiv(data):#, bits, verbose=True):
     """
     Returns sensor level value from data using sensor bit mask in micro volts (uV).
     """
 
-    # if verbose:
+    #if verbose:
     #    return detailed_get_level(data, bits)
-    level = 42
-    return level
+    #level = 42
+    return (((ord(data[29]) << 4) | (ord(data[31]) >> 4)), ((ord(data[30]) << 4) | (ord(data[31]) & 0x0F)))
+
 
 
 def get_level_16(data, bits, verbose=False):
@@ -199,8 +200,8 @@ new_color_scale = {
     0: (0, 0, 0),
     1: (255, 0, 0),
     2: (255, 0, 0),
-    3: (255, 255, 0),
-    4: (255, 255, 0)
+    3: (57, 255, 20),
+    4: (57, 255, 20)
 }
 
 

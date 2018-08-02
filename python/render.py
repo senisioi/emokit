@@ -83,14 +83,16 @@ def main():
     """
     global gheight
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+    W = 1200
+    H = 800
+    screen = pygame.display.set_mode((W, H))
     graphers = []
     recordings = []
     recording = False
     record_packets = []
     updated = False
     cursor_x, cursor_y = 400, 300
-    fullscreen = False
+    fullscreen = True
     with Emotiv(display_output=False) as emotiv:
         for name in 'AF3 F7 F3 FC5 T7 P7 O1 O2 P8 T8 FC6 F4 F8 AF4'.split(' '):
             graphers.append(Grapher(screen, name, len(graphers), emotiv.old_model))
@@ -105,10 +107,10 @@ def main():
                         return
                     elif event.key == pygame.K_f:
                         if fullscreen:
-                            screen = pygame.display.set_mode((800, 600))
+                            screen = pygame.display.set_mode((W, H))
                             fullscreen = False
                         else:
-                            screen = pygame.display.set_mode((800, 600), FULLSCREEN, 16)
+                            screen = pygame.display.set_mode((W, H), FULLSCREEN, 16)
                             fullscreen = True
                     elif event.key == pygame.K_r:
                         if not recording:
@@ -126,17 +128,17 @@ def main():
                     if packet is not None:
                         if type(packet) != EmotivExtraPacket:
                             if abs(packet.sensors['X']['value']) > 1:
-                                cursor_x = max(0, min(cursor_x, 800))
+                                cursor_x = max(0, min(cursor_x, W))
                                 cursor_x -= packet.sensors['X']['value']
                             if abs(packet.sensors['Y']['value']) > 1:
                                 cursor_y += packet.sensors['Y']['value']
-                                cursor_y = max(0, min(cursor_y, 600))
+                                cursor_y = max(0, min(cursor_y, H))
                             map(lambda x: x.update(packet), graphers)
                             if recording:
                                 record_packets.append(packet)
                             updated = True
                             packets_in_queue += 1
-                    time.sleep(0.001)
+                    #time.sleep(0.001)
             except Exception as ex:
                 print("EmotivRender DequeuePlotError ", sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2],
                       " : ", ex)

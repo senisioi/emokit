@@ -5,7 +5,7 @@ from datetime import datetime
 
 from .battery import battery_values
 from .sensors import sensors_14_bits, sensors_16_bytes, quality_bits, sensor_quality_bit, sensors_mapping
-from .util import get_level, get_quality_scale, get_gyro
+from .util import get_level, get_quality_scale, get_gyro_emotiv
 
 output_format = "Position {} - Char: {} SChar: {} UChar: {} Bool: {} Short: {} UShort: {} Int: {} UInt: {}\n" \
                 "             Long: {} ULong: {} 64Long: {} U64Long: {} Float: {}\n" \
@@ -203,16 +203,21 @@ class EmotivOldPacket(object):
         # print([ord(c) for c in data])
         self.battery = None
         if self.counter > 127:
-            self.battery = battery_values[str(self.counter)]
+            self.battery = battery_values.get(str(self.counter), 0)
             self.counter = 128
         self.sync = self.counter == 0xe9
         self.sensors = sensors_mapping.copy()
-        value = get_gyro(self.raw_data, sensors_14_bits['GYRO_Y'])
+        #value = get_gyro(self.raw_data, sensors_14_bits['GYRO_Y'])
         # print("Gyro Y: {}".format(value))
-        self.sensors['Y']['value'] = value * 1.0
-        value = get_gyro(self.raw_data, sensors_14_bits['GYRO_X'])
+        #self.sensors['Y']['value'] = value * 1.0
+        #value = get_gyro(self.raw_data, sensors_14_bits['GYRO_X'])
         # print("Gyro X: {}".format(value))
-        self.sensors['X']['value'] = value * 1.0
+        #self.sensors['X']['value'] = value * 1.0
+        (gyroX, gyroY) = get_gyro_emotiv(self.raw_data)
+        self.sensors['X']['value'] = gyroX * 1.0
+        self.sensors['Y']['value'] = gyroY * 1.0
+
+        
         """
         #value = get_gyro(self.raw_data, sensors_14_bits['GYRO_Y_2'])
         #print("Gyro Y 2: {}".format(value))
